@@ -6,11 +6,12 @@ module System.Metrics.Prometheus.Metric.Counter
        , inc
        , sample
        , addAndSample
+       , set
        ) where
 
 
 import           Control.Applicative  ((<$>))
-import           Data.Atomics.Counter (AtomicCounter, incrCounter, newCounter)
+import           Data.Atomics.Counter (AtomicCounter, incrCounter, newCounter, writeCounter)
 
 
 newtype Counter = Counter { unCounter :: AtomicCounter }
@@ -36,3 +37,6 @@ inc = add 1
 
 sample :: Counter -> IO CounterSample
 sample = addAndSample 0
+
+set :: Int -> Counter -> IO ()
+set i (Counter c) = writeCounter c i
