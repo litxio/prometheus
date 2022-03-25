@@ -14,8 +14,10 @@ import           System.Metrics.Prometheus.Metric.Counter      (Counter)
 import           System.Metrics.Prometheus.Metric.Gauge        (Gauge)
 import           System.Metrics.Prometheus.Metric.Histogram    (Histogram)
 import qualified System.Metrics.Prometheus.Metric.Histogram    as Histogram
-import           System.Metrics.Prometheus.MetricId            (Labels, Name)
-import           System.Metrics.Prometheus.Registry            (RegistrySample)
+import           System.Metrics.Prometheus.MetricId            (Labels,
+                                                                MetricId, Name)
+import           System.Metrics.Prometheus.Registry            (RegistrySample,
+                                                                listMetricIds)
 
 
 newtype RegistryT m a =
@@ -37,6 +39,14 @@ registerGauge n l = RegistryT ask >>= liftIO . R.registerGauge n l
 
 registerHistogram :: MonadIO m => Name -> Labels -> [Histogram.UpperBound] -> RegistryT m Histogram
 registerHistogram n l b = RegistryT ask >>= liftIO . R.registerHistogram n l b
+
+
+removeMetric :: MonadIO m => MetricId -> RegistryT m ()
+removeMetric i = RegistryT ask >>= liftIO . R.removeMetric i
+
+
+listMetricIds :: MonadIO m => RegistryT m [MetricId]
+listMetricIds = RegistryT ask >>= liftIO . R.listMetricIds
 
 
 sample :: Monad m => RegistryT m (IO RegistrySample)

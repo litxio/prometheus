@@ -7,6 +7,8 @@ module System.Metrics.Prometheus.Registry
        , registerCounter
        , registerGauge
        , registerHistogram
+       , listMetricIds
+       , removeMetric
        , sample
        ) where
 
@@ -65,6 +67,14 @@ registerHistogram name labels buckets registry = do
   where
       mid = MetricId name labels
       collision k _ _ = throw (KeyError k)
+
+
+removeMetric :: MetricId -> Registry -> Registry
+removeMetric i (Registry m) = Registry . Map.delete i $ m
+
+
+listMetricIds :: Registry -> [MetricId]
+listMetricIds = Map.keys . unRegistry
 
 
 sample :: Registry -> IO RegistrySample
