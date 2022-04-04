@@ -10,7 +10,8 @@ module System.Metrics.Prometheus.Metric.Counter (
 ) where
 
 import Control.Applicative ((<$>))
-import Data.Atomics.Counter (AtomicCounter, incrCounter, newCounter, writeCounter)
+import Control.Monad (when)
+import Data.Atomics.Counter (AtomicCounter, incrCounter, newCounter, readCounter, writeCounter)
 
 
 newtype Counter = Counter {unCounter :: AtomicCounter}
@@ -40,4 +41,6 @@ sample = addAndSample 0
 
 
 set :: Int -> Counter -> IO ()
-set i (Counter c) = writeCounter c i
+set i (Counter c) = do
+    n <- readCounter c
+    when (i > n) $ writeCounter c i
