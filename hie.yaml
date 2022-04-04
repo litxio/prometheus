@@ -1,0 +1,6 @@
+---
+
+cradle:
+  stack:
+    - component: "prometheus:lib"
+      path: "./src/"
