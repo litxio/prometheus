@@ -1,33 +1,36 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module System.Metrics.Prometheus.MetricId where
 
-import           Data.Char (isDigit)
-import           Data.Bifunctor (first)
-import           Data.Map       (Map)
-import qualified Data.Map       as Map
-import           Data.Monoid    (Monoid)
-import           Data.Semigroup (Semigroup)
-import           Data.String    (IsString(..))
-import           Data.Text      (Text)
+import Data.Bifunctor (first)
+import Data.Char (isDigit)
+import Data.Map (Map)
+import qualified Data.Map as Map
+import Data.Monoid (Monoid)
+import Data.Semigroup (Semigroup)
+import Data.String (IsString (..))
+import Data.Text (Text)
 import qualified Data.Text as Text
-import           Prelude        hiding (null)
+import Prelude hiding (null)
+
 
 -- | Construct with 'makeName' to ensure that names use only valid characters
-newtype Name = Name { unName :: Text } deriving (Show, Eq, Ord, Monoid, Semigroup)
+newtype Name = Name {unName :: Text} deriving (Show, Eq, Ord, Monoid, Semigroup)
+
 
 instance IsString Name where
-  fromString = makeName . Text.pack
-
-newtype Labels = Labels { unLabels :: Map Text Text } deriving (Show, Eq, Ord, Monoid, Semigroup)
+    fromString = makeName . Text.pack
 
 
-data MetricId =
-    MetricId
-    { name   :: Name
+newtype Labels = Labels {unLabels :: Map Text Text} deriving (Show, Eq, Ord, Monoid, Semigroup)
+
+
+data MetricId = MetricId
+    { name :: Name
     , labels :: Labels
-    } deriving (Eq, Ord, Show)
+    }
+    deriving (Eq, Ord, Show)
 
 
 addLabel :: Text -> Text -> Labels -> Labels
@@ -53,7 +56,7 @@ null = Map.null . unLabels
 -- first character is only valid as a later character.
 makeValid :: Text -> Text
 makeValid "" = "_"
-makeValid txt = prefix_ <> Text.map (\c -> if allowedChar c then c else '_' ) txt
+makeValid txt = prefix_ <> Text.map (\c -> if allowedChar c then c else '_') txt
   where
     prefix_ = if isDigit (Text.head txt) then "_" else ""
     allowedChar :: Char -> Bool

@@ -1,34 +1,41 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module System.Metrics.Prometheus.Http.Scrape
-       ( Path
-       , serveMetrics
-       , serveMetricsT
-       , prometheusApp
-       )
-       where
+module System.Metrics.Prometheus.Http.Scrape (
+    Path,
+    serveMetrics,
+    serveMetricsT,
+    prometheusApp,
+) where
 
-import           Control.Applicative                            ((<$>))
-import           Control.Monad.IO.Class                         (MonadIO,
-                                                                 liftIO)
-import           Data.Text                                      (Text)
-import           Network.HTTP.Types                             (hContentType,
-                                                                 methodGet,
-                                                                 status200,
-                                                                 status404)
-import           Network.Wai                                    (Application,
-                                                                 Request,
-                                                                 Response,
-                                                                 pathInfo,
-                                                                 requestMethod,
-                                                                 responseBuilder,
-                                                                 responseLBS)
-import           Network.Wai.Handler.Warp                       (Port, run)
+import Control.Applicative ((<$>))
+import Control.Monad.IO.Class (
+    MonadIO,
+    liftIO,
+ )
+import Data.Text (Text)
+import Network.HTTP.Types (
+    hContentType,
+    methodGet,
+    status200,
+    status404,
+ )
+import Network.Wai (
+    Application,
+    Request,
+    Response,
+    pathInfo,
+    requestMethod,
+    responseBuilder,
+    responseLBS,
+ )
+import Network.Wai.Handler.Warp (Port, run)
 
-import           System.Metrics.Prometheus.Concurrent.RegistryT (RegistryT,
-                                                                 sample)
-import           System.Metrics.Prometheus.Encode.Text          (encodeMetrics)
-import           System.Metrics.Prometheus.Registry             (RegistrySample)
+import System.Metrics.Prometheus.Concurrent.RegistryT (
+    RegistryT,
+    sample,
+ )
+import System.Metrics.Prometheus.Encode.Text (encodeMetrics)
+import System.Metrics.Prometheus.Registry (RegistrySample)
 
 
 -- | The HTTP web route on which to serve data

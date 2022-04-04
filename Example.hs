@@ -2,11 +2,12 @@
 
 module Example where
 
-import           Control.Monad.IO.Class                         (liftIO)
-import           System.Metrics.Prometheus.Http.Scrape          (serveMetricsT)
-import           System.Metrics.Prometheus.Concurrent.RegistryT
-import           System.Metrics.Prometheus.Metric.Counter       (inc)
-import           System.Metrics.Prometheus.MetricId
+import Control.Monad.IO.Class (liftIO)
+import System.Metrics.Prometheus.Concurrent.RegistryT
+import System.Metrics.Prometheus.Http.Scrape (serveMetricsT)
+import System.Metrics.Prometheus.Metric.Counter (inc)
+import System.Metrics.Prometheus.MetricId
+
 
 main :: IO ()
 main = runRegistryT $ do
@@ -14,7 +15,7 @@ main = runRegistryT $ do
     connectSuccessGauge <- registerGauge "example_connections" (fromList [("login", "success")])
     connectFailureGauge <- registerGauge "example_connections" (addLabel "login" "failure" mempty)
     connectCounter <- registerCounter "example_connection_total" mempty
-    latencyHistogram <- registerHistogram "example_round_trip_latency_ms" mempty [10, 20..100]
+    latencyHistogram <- registerHistogram "example_round_trip_latency_ms" mempty [10, 20 .. 100]
 
     liftIO $ inc connectCounter -- increment a counter
 

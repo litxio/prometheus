@@ -2,26 +2,32 @@
 
 module System.Metrics.Prometheus.Concurrent.RegistryT where
 
-import           Control.Applicative                           ((<$>))
-import           Control.Monad.IO.Class                        (MonadIO, liftIO)
-import           Control.Monad.Trans.Class                     (MonadTrans)
-import           Control.Monad.Trans.Reader                    (ReaderT (..),
-                                                                ask)
+import Control.Applicative ((<$>))
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.Trans.Class (MonadTrans)
+import Control.Monad.Trans.Reader (
+    ReaderT (..),
+    ask,
+ )
 
-import           System.Metrics.Prometheus.Concurrent.Registry (Registry, new)
+import System.Metrics.Prometheus.Concurrent.Registry (Registry, new)
 import qualified System.Metrics.Prometheus.Concurrent.Registry as R
-import           System.Metrics.Prometheus.Metric.Counter      (Counter)
-import           System.Metrics.Prometheus.Metric.Gauge        (Gauge)
-import           System.Metrics.Prometheus.Metric.Histogram    (Histogram)
-import qualified System.Metrics.Prometheus.Metric.Histogram    as Histogram
-import           System.Metrics.Prometheus.MetricId            (Labels,
-                                                                MetricId, Name)
-import           System.Metrics.Prometheus.Registry            (RegistrySample,
-                                                                listMetricIds)
+import System.Metrics.Prometheus.Metric.Counter (Counter)
+import System.Metrics.Prometheus.Metric.Gauge (Gauge)
+import System.Metrics.Prometheus.Metric.Histogram (Histogram)
+import qualified System.Metrics.Prometheus.Metric.Histogram as Histogram
+import System.Metrics.Prometheus.MetricId (
+    Labels,
+    MetricId,
+    Name,
+ )
+import System.Metrics.Prometheus.Registry (
+    RegistrySample,
+    listMetricIds,
+ )
 
 
-newtype RegistryT m a =
-    RegistryT { unRegistryT :: ReaderT Registry m a }
+newtype RegistryT m a = RegistryT {unRegistryT :: ReaderT Registry m a}
     deriving (Monad, MonadTrans, Applicative, Functor, MonadIO)
 
 

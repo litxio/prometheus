@@ -1,32 +1,39 @@
-module System.Metrics.Prometheus.Concurrent.Registry
-       ( Registry
-       , new
-       , registerCounter
-       , registerGauge
-       , registerHistogram
-       , listMetricIds
-       , removeMetric
-       , sample
-       ) where
+module System.Metrics.Prometheus.Concurrent.Registry (
+    Registry,
+    new,
+    registerCounter,
+    registerGauge,
+    registerHistogram,
+    listMetricIds,
+    removeMetric,
+    sample,
+) where
+
+import Control.Applicative ((<$>))
+import Control.Concurrent.MVar (
+    MVar,
+    modifyMVarMasked,
+    newMVar,
+    readMVar,
+    withMVar,
+ )
+import Data.Tuple (swap)
+
+import System.Metrics.Prometheus.Metric.Counter (Counter)
+import System.Metrics.Prometheus.Metric.Gauge (Gauge)
+import System.Metrics.Prometheus.Metric.Histogram (
+    Histogram,
+    UpperBound,
+ )
+import System.Metrics.Prometheus.MetricId (
+    Labels,
+    MetricId,
+    Name,
+ )
+import qualified System.Metrics.Prometheus.Registry as R
 
 
-import           Control.Applicative                        ((<$>))
-import           Control.Concurrent.MVar                    (MVar,
-                                                             modifyMVarMasked,
-                                                             newMVar, readMVar,
-                                                             withMVar)
-import           Data.Tuple                                 (swap)
-
-import           System.Metrics.Prometheus.Metric.Counter   (Counter)
-import           System.Metrics.Prometheus.Metric.Gauge     (Gauge)
-import           System.Metrics.Prometheus.Metric.Histogram (Histogram,
-                                                             UpperBound)
-import           System.Metrics.Prometheus.MetricId         (Labels, MetricId,
-                                                             Name)
-import qualified System.Metrics.Prometheus.Registry         as R
-
-
-newtype Registry = Registry { unRegistry :: MVar R.Registry }
+newtype Registry = Registry {unRegistry :: MVar R.Registry}
 
 
 new :: IO Registry
@@ -53,7 +60,8 @@ registerHistogram name labels buckets = flip modifyMVarMasked register . unRegis
 
 removeMetric :: MetricId -> Registry -> IO ()
 removeMetric i = flip modifyMVarMasked remove . unRegistry
-  where remove reg = pure (R.removeMetric i reg, ())
+  where
+    remove reg = pure (R.removeMetric i reg, ())
 
 
 listMetricIds :: Registry -> IO [MetricId]

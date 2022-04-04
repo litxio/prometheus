@@ -1,22 +1,22 @@
-module System.Metrics.Prometheus.Metric.Gauge
-       ( Gauge
-       , GaugeSample (..)
-       , new
-       , add
-       , sub
-       , inc
-       , dec
-       , set
-       , sample
-       , modifyAndSample
-       ) where
+module System.Metrics.Prometheus.Metric.Gauge (
+    Gauge,
+    GaugeSample (..),
+    new,
+    add,
+    sub,
+    inc,
+    dec,
+    set,
+    sample,
+    modifyAndSample,
+) where
 
-import           Control.Applicative ((<$>))
-import           Data.IORef          (IORef, atomicModifyIORef', newIORef)
+import Control.Applicative ((<$>))
+import Data.IORef (IORef, atomicModifyIORef', newIORef)
 
 
-newtype Gauge = Gauge { unGauge :: IORef Double }
-newtype GaugeSample = GaugeSample { unGaugeSample :: Double }
+newtype Gauge = Gauge {unGauge :: IORef Double}
+newtype GaugeSample = GaugeSample {unGaugeSample :: Double}
 
 
 new :: IO Gauge
@@ -25,7 +25,8 @@ new = Gauge <$> newIORef 0
 
 modifyAndSample :: (Double -> Double) -> Gauge -> IO GaugeSample
 modifyAndSample f = flip atomicModifyIORef' g . unGauge
-  where g v = (f v, GaugeSample $ f v)
+  where
+    g v = (f v, GaugeSample $ f v)
 
 
 add :: Double -> Gauge -> IO ()

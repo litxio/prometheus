@@ -2,27 +2,34 @@
 
 module System.Metrics.Prometheus.RegistryT where
 
-import           Control.Applicative                        ((<$>))
-import           Control.Monad.IO.Class                     (MonadIO, liftIO)
-import           Control.Monad.Trans.Class                  (MonadTrans)
-import           Control.Monad.Trans.State.Strict           (StateT (..),
-                                                             evalStateT,
-                                                             execStateT, get)
+import Control.Applicative ((<$>))
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.Trans.Class (MonadTrans)
+import Control.Monad.Trans.State.Strict (
+    StateT (..),
+    evalStateT,
+    execStateT,
+    get,
+ )
 
-import           System.Metrics.Prometheus.Metric.Counter   (Counter)
-import           System.Metrics.Prometheus.Metric.Gauge     (Gauge)
-import           System.Metrics.Prometheus.Metric.Histogram (Histogram)
+import System.Metrics.Prometheus.Metric.Counter (Counter)
+import System.Metrics.Prometheus.Metric.Gauge (Gauge)
+import System.Metrics.Prometheus.Metric.Histogram (Histogram)
 import qualified System.Metrics.Prometheus.Metric.Histogram as Histogram
-import           System.Metrics.Prometheus.MetricId         (Labels, MetricId,
-                                                             Name)
-import           System.Metrics.Prometheus.Registry         (Registry,
-                                                             RegistrySample,
-                                                             new)
-import qualified System.Metrics.Prometheus.Registry         as R
+import System.Metrics.Prometheus.MetricId (
+    Labels,
+    MetricId,
+    Name,
+ )
+import System.Metrics.Prometheus.Registry (
+    Registry,
+    RegistrySample,
+    new,
+ )
+import qualified System.Metrics.Prometheus.Registry as R
 
 
-newtype RegistryT m a =
-    RegistryT { unRegistryT :: StateT Registry m a }
+newtype RegistryT m a = RegistryT {unRegistryT :: StateT Registry m a}
     deriving (Monad, MonadTrans, Applicative, Functor, MonadIO)
 
 
