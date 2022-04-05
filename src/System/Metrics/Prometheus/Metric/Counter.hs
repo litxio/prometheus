@@ -11,7 +11,7 @@ module System.Metrics.Prometheus.Metric.Counter (
 
 import Control.Applicative ((<$>))
 import Control.Monad (when)
-import Data.Atomics.Counter (AtomicCounter, incrCounter, newCounter, readCounter, writeCounter)
+import Data.Atomics.Counter (AtomicCounter, incrCounter, newCounter, writeCounter)
 
 
 newtype Counter = Counter {unCounter :: AtomicCounter}
@@ -40,7 +40,13 @@ sample :: Counter -> IO CounterSample
 sample = addAndSample 0
 
 
+-- | Write @i@ to the counter, if @i@ is more than the current value. This is
+-- useful for when the count is maintained by a separate system (e.g. GHC's GC
+-- counter).
+--
+-- WARNING: For multiple writers, the most recent one wins, which may not
+-- preserve the increasing property. If you have stronger requirements than this,
+-- please check with the maintainers. 
+-- See <https://github.com/bitnomial/prometheus/pull/44> for discussion.
 set :: Int -> Counter -> IO ()
-set i (Counter c) = do
-    n <- readCounter c
-    when (i > n) $ writeCounter c i
+set i (Counter c) = writeCounter c i
