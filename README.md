@@ -42,7 +42,7 @@ main = runRegistryT $ do
 
     -- [...] pass metric handles to the rest of the app
 
-    serveMetricsT 8080 ["metrics"] -- http://localhost:8080/metric server
+    serveMetricsT 8080 ["metrics"] -- http://localhost:8080/metrics server
 ```
 
 ## Advanced Usage
