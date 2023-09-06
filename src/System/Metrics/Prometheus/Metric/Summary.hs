@@ -20,7 +20,6 @@ import Data.Scientific (Scientific)
 import Data.List (sort, foldl')
 import Data.Time.Clock.System (SystemTime(..), getSystemTime)
 import Data.Int (Int64)
-import qualified Debug.Trace as Debug
 
 type Observation = (SystemTime, Double)
 data Summary = Summary {sumObservations        :: IORef [Observation]
@@ -59,7 +58,7 @@ sample Summary{sumObservations, sumQuantilesConfigured, sumMaxAge} = do
     st@MkSystemTime{systemSeconds} <- getSystemTime
     let cutoff = st{systemSeconds=systemSeconds-sumMaxAge}
     atomicModifyIORef sumObservations $ \observations ->
-      let filtObs = Debug.traceShowId $ filter ((>= cutoff) . fst) observations
+      let filtObs = filter ((>= cutoff) . fst) observations
        in (filtObs
           ,calcQuantiles sumQuantilesConfigured $ snd <$> filtObs)
 
