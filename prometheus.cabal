@@ -71,6 +71,7 @@ library
                  , System.Metrics.Prometheus.Encode.Text
                  , System.Metrics.Prometheus.Encode.Text.Histogram
                  , System.Metrics.Prometheus.Encode.Text.MetricId
+                 , System.Metrics.Prometheus.Encode.Text.Summary
                  , System.Metrics.Prometheus.Http.Push
                  , System.Metrics.Prometheus.Http.Scrape
                  , System.Metrics.Prometheus.Metric
@@ -94,6 +95,8 @@ library
                , transformers    >= 0.4  && < 0.7
                , wai             >= 3.2  && < 3.3
                , warp            >= 3.2  && < 3.5
+               , scientific      >= 0.3  && < 0.4
+               , time            >= 1.11 && < 1.13
 
 source-repository head
   type:     git

@@ -9,14 +9,14 @@ import System.Metrics.Prometheus.Metric.Histogram (
     Histogram,
     HistogramSample,
  )
-import System.Metrics.Prometheus.Metric.Summary (SummarySample)
+import System.Metrics.Prometheus.Metric.Summary (Summary, SummarySample)
 
 
 data Metric
     = CounterMetric Counter
     | GaugeMetric Gauge
-    | -- | Summary S.Summary
-      HistogramMetric Histogram
+    | Summary Summary
+    | HistogramMetric Histogram
 
 
 data MetricSample
