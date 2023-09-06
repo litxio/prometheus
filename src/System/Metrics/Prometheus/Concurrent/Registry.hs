@@ -4,12 +4,12 @@ module System.Metrics.Prometheus.Concurrent.Registry (
     registerCounter,
     registerGauge,
     registerHistogram,
+    registerSummary,
     listMetricIds,
     removeMetric,
     sample,
 ) where
 
-import Control.Applicative ((<$>))
 import Control.Concurrent.MVar (
     MVar,
     modifyMVarMasked,
@@ -31,6 +31,8 @@ import System.Metrics.Prometheus.MetricId (
     Name,
  )
 import qualified System.Metrics.Prometheus.Registry as R
+import Data.Int (Int64)
+import System.Metrics.Prometheus.Metric.Summary (Summary, Quantile)
 
 
 newtype Registry = Registry {unRegistry :: MVar R.Registry}
@@ -57,6 +59,10 @@ registerHistogram name labels buckets = flip modifyMVarMasked register . unRegis
   where
     register = fmap swap . R.registerHistogram name labels buckets
 
+registerSummary :: Name -> Labels -> [Quantile] -> Int64 -> Registry -> IO Summary
+registerSummary name labels quantiles maxAge = flip modifyMVarMasked register . unRegistry
+  where
+    register = fmap swap . R.registerSummary name labels quantiles maxAge
 
 removeMetric :: MetricId -> Registry -> IO ()
 removeMetric i = flip modifyMVarMasked remove . unRegistry

@@ -7,12 +7,12 @@ module System.Metrics.Prometheus.Registry (
     registerCounter,
     registerGauge,
     registerHistogram,
+    registerSummary,
     listMetricIds,
     removeMetric,
     sample,
 ) where
 
-import Control.Applicative ((<$>))
 import Control.Exception (Exception, throw)
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -31,11 +31,17 @@ import System.Metrics.Prometheus.Metric.Histogram (
     UpperBound,
  )
 import qualified System.Metrics.Prometheus.Metric.Histogram as Histogram
+import System.Metrics.Prometheus.Metric.Summary (
+    Summary,
+    Quantile,
+ )
+import qualified System.Metrics.Prometheus.Metric.Summary as Summary
 import System.Metrics.Prometheus.MetricId (
     Labels (..),
     MetricId (MetricId),
     Name (..),
  )
+import Data.Int (Int64)
 
 
 newtype Registry = Registry {unRegistry :: Map MetricId Metric}
@@ -76,6 +82,17 @@ registerHistogram name labels buckets registry = do
     mid = MetricId name labels
     collision k _ _ = throw (KeyError k)
 
+registerSummary :: Name -> Labels -> [Quantile] -> Int64 -> Registry -> IO (Summary, Registry)
+registerSummary name labels quantiles maxAge registry = do
+    summary <- Summary.new quantiles maxAge
+    return (summary
+           ,Registry $ Map.insertWithKey collision mid
+                                         (SummaryMetric summary)
+                                         (unRegistry registry))
+  where
+    mid = MetricId name labels
+    collision k _ _ = throw (KeyError k)
+
 
 removeMetric :: MetricId -> Registry -> Registry
 removeMetric i (Registry m) = Registry . Map.delete i $ m
@@ -92,3 +109,4 @@ sample = fmap RegistrySample . mapM sampleMetric . unRegistry
     sampleMetric (CounterMetric count) = CounterMetricSample <$> Counter.sample count
     sampleMetric (GaugeMetric gauge) = GaugeMetricSample <$> Gauge.sample gauge
     sampleMetric (HistogramMetric histogram) = HistogramMetricSample <$> Histogram.sample histogram
+    sampleMetric (SummaryMetric summary) = SummaryMetricSample <$> Summary.sample summary

@@ -15,7 +15,7 @@ import System.Metrics.Prometheus.Metric.Summary (Summary, SummarySample)
 data Metric
     = CounterMetric Counter
     | GaugeMetric Gauge
-    | Summary Summary
+    | SummaryMetric Summary
     | HistogramMetric Histogram
 
 

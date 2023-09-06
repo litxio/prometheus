@@ -2,7 +2,6 @@
 
 module System.Metrics.Prometheus.Concurrent.RegistryT where
 
-import Control.Applicative ((<$>))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Class (MonadTrans)
 import Control.Monad.Trans.Reader (
@@ -23,8 +22,9 @@ import System.Metrics.Prometheus.MetricId (
  )
 import System.Metrics.Prometheus.Registry (
     RegistrySample,
-    listMetricIds,
  )
+import Data.Int (Int64)
+import System.Metrics.Prometheus.Metric.Summary (Summary, Quantile)
 
 
 newtype RegistryT m a = RegistryT {unRegistryT :: ReaderT Registry m a}
@@ -45,6 +45,15 @@ registerGauge n l = RegistryT ask >>= liftIO . R.registerGauge n l
 
 registerHistogram :: MonadIO m => Name -> Labels -> [Histogram.UpperBound] -> RegistryT m Histogram
 registerHistogram n l b = RegistryT ask >>= liftIO . R.registerHistogram n l b
+
+
+registerSummary :: MonadIO m
+                => Name
+                -> Labels
+                -> [Quantile]
+                -> Int64
+                -> RegistryT m Summary
+registerSummary n l b ma = RegistryT ask >>= liftIO . R.registerSummary n l b ma
 
 
 removeMetric :: MonadIO m => MetricId -> RegistryT m ()

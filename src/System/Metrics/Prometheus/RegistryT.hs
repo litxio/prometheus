@@ -27,6 +27,9 @@ import System.Metrics.Prometheus.Registry (
     new,
  )
 import qualified System.Metrics.Prometheus.Registry as R
+import qualified System.Metrics.Prometheus.Metric.Summary as Summary
+import System.Metrics.Prometheus.Metric.Summary (Summary)
+import Data.Int (Int64)
 
 
 newtype RegistryT m a = RegistryT {unRegistryT :: StateT Registry m a}
@@ -59,6 +62,10 @@ registerGauge n l = withRegistry (liftIO . R.registerGauge n l)
 
 registerHistogram :: MonadIO m => Name -> Labels -> [Histogram.UpperBound] -> RegistryT m Histogram
 registerHistogram n l u = withRegistry (liftIO . R.registerHistogram n l u)
+
+
+registerSummary :: MonadIO m => Name -> Labels -> [Summary.Quantile] -> Int64 -> RegistryT m Summary
+registerSummary n l u ma = withRegistry (liftIO . R.registerSummary n l u ma)
 
 
 removeMetric :: MonadIO m => MetricId -> RegistryT m ()
